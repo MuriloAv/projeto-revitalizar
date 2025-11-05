@@ -7,23 +7,29 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import UploadPage from './pages/UploadPage';
 
+// Importa o componente de segurança
+import ProtectedRoute from './components/ProtectedRoute';
+
 function App() {
   return (
     <BrowserRouter>
       {/* Um menu de navegação pode vir aqui (veremos depois) */}
       
       <Routes>
-        {/* A rota principal '/' vai mostrar a HomePage  */}
+        {/* Rotas públicas */}
         <Route path="/" element={<HomePage />} />
-        
-        {/* A rota '/login' vai mostrar a LoginPage  */}
         <Route path="/login" element={<LoginPage />} />
-        
-        {/* A rota '/register' vai mostrar a RegisterPage  */}
         <Route path="/register" element={<RegisterPage />} />
-        
-        {/* A rota '/upload' vai mostrar a UploadPage  */}
-        <Route path="/upload" element={<UploadPage />} />
+
+        {/* Rota protegida */}
+        <Route
+          path="/upload"
+          element={
+            <ProtectedRoute>
+              <UploadPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       
       {/* Um rodapé pode vir aqui */}
