@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 
 // Esta é a mesma palavra-secreta que você usou no login
-const JWT_SECRET = 'SUA_PALAVRA_SECRETA_MUDE_ISSO'; 
+const JWT_SECRET = '12345'; 
 
 const authMiddleware = (req, res, next) => {
     // 1. Pega o token do cabeçalho 'Authorization'
