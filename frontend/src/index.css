@@ -1,13 +1,43 @@
+/* src/index.css */
+
+/* 1. Reset de Box-sizing (Fundamental) */
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/* 2. Estilos Globais do Body (O "Alicerce") */
 body {
-  margin: 0;
+  margin: 0; /* Remove a margem padrão do navegador */
+  padding: 0; /* Remove o padding padrão */
+  
+  /* 3. A Mágica da Fonte */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* 5. Cor de Texto Padrão */
+  color: #333;
+
+  /* --- MODIFICAÇÃO --- */
+  /* O App.js controla a imagem, e este arquivo
+     controla a cor de fundo (o 'fallback') */
+  
+  /* MUDANÇA AQUI: de #f0f2f5 para um azul-claro */
+  background-color: #d4eaf7; 
+
+  min-height: 100vh; /* Isso pode ficar */
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* 6. Ajuste no <main> que colocamos no App.js */
+main {
+  width: 100%;
+  max-width: 1200px; /* Largura máxima do conteúdo */
+  margin: 20px auto; /* Centraliza (auto) e dá margem em cima/baixo (20px) */
+  padding: 0 20px;   /* Um respiro interno nas laterais */
 }
