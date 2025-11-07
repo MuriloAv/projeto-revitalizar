@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api'; 
 import UploadCard from '../components/UploadCard'; 
 
-// CSS básico para a galeria (movido para fora para reutilizar)
+// CSS básico para a galeria 
 const galleryStyles = {
   display: 'flex',
   flexWrap: 'wrap',
@@ -39,23 +39,22 @@ function HomePage() {
   const [uploads, setUploads] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- 1. NOVOS ESTADOS PARA PAGINAÇÃO ---
+  //  NOVOS ESTADOS PARA PAGINAÇÃO
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // --- 2. useEffect MODIFICADO ---
-  //    Agora ele depende de 'currentPage'.
-  //    Sempre que 'currentPage' mudar, o useEffect roda de novo.
+    //  Agora ele depende de 'currentPage'.
+  //  Sempre que 'currentPage' mudar, o useEffect roda de novo.
   useEffect(() => {
     
     const fetchUploads = async () => {
       try {
         setLoading(true);
         
-        // 3. Busca os dados da rota paginada (ex: /uploads?page=1&limit=9)
+        // Busca os dados da rota paginada (ex: /uploads?page=1&limit=9)
         const response = await api.get(`/uploads?page=${currentPage}&limit=9`);
         
-        // 4. Salva os dados do novo objeto de resposta
+        // Salva os dados do novo objeto de resposta
         setUploads(response.data.uploads);
         setTotalPages(response.data.totalPages);
         
@@ -68,9 +67,9 @@ function HomePage() {
     };
 
     fetchUploads(); 
-  }, [currentPage]); // <-- A MÁGICA: Roda de novo quando 'currentPage' mudar
+  }, [currentPage]); // Roda de novo quando currentPage mudar
 
-  // --- 5. Funções para os botões ---
+  // Funções para os botões ---
   const handleNextPage = () => {
     // Apenas atualiza o estado. O useEffect faz o resto.
     setCurrentPage((prevPage) => prevPage + 1);
@@ -102,7 +101,7 @@ function HomePage() {
         ))}
       </div>
 
-      {/* --- 6. CONTROLES DE PAGINAÇÃO --- */}
+      {/* CONTROLES DE PAGINAÇÃO  */}
       <div style={paginationStyles}>
         <button
           style={currentPage <= 1 ? disabledButtonStyles : buttonStyles}

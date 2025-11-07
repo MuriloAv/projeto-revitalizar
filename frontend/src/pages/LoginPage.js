@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 
-// 1. Importa o CSS (Isso está certo)
+// Importa o CSS 
 import './Form.css'; 
 
 function LoginPage() {
@@ -44,7 +44,7 @@ function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="form-input" /* O comentário quebrado foi removido */
+            className="form-input" 
           />
         </div>
         
@@ -55,7 +55,7 @@ function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="form-input" /* O comentário quebrado foi removido */
+            className="form-input" 
           />
         </div>
         

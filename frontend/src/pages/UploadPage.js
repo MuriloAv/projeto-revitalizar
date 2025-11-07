@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api'; // Nosso axios
-// import axios from 'axios'; // NÃO PRECISAMOS MAIS DELE
-import './Form.css'; // Reutilizando o CSS do formulário
+import api from '../api'; // axios
+import './Form.css'; // Reutiliza o CSS do formulário
 
 function UploadPage() {
-  // Estados do formulário (sem mudanças)
+  // Estados do formulário 
   const [residues, setResidues] = useState([]); 
   const [selectedResidueId, setSelectedResidueId] = useState(''); 
   const [selectedFile, setSelectedFile] = useState(null); 
@@ -16,7 +15,7 @@ function UploadPage() {
 
   const navigate = useNavigate();
 
-  // Busca os tipos de resíduo (sem mudanças)
+  // Busca os tipos de resíduo 
   useEffect(() => {
     (async () => {
       try {
@@ -28,7 +27,7 @@ function UploadPage() {
     })();
   }, []); 
 
-  // --- O NOVO handleSubmit (FLUXO SIMPLES COM MULTER) ---
+  // O NOVO handleSubmit (FLUXO SIMPLES COM MULTER)
   const handleSubmit = async (event) => {
     event.preventDefault(); 
 
@@ -39,10 +38,10 @@ function UploadPage() {
     setLoading(true);
 
     try {
-      // --- ETAPA 1: Criar o FormData ---
+      // Cria o FormData
       const formData = new FormData();
       
-      // Adicionamos o arquivo de imagem
+      // Adiciona arquivo de imagem
       // O nome 'imageFile' TEM que ser o mesmo do upload.single('imageFile') no backend
       formData.append('imageFile', selectedFile); 
       
@@ -51,14 +50,11 @@ function UploadPage() {
       formData.append('city', city);
       formData.append('river_name', riverName);
       formData.append('notes', notes);
-      // (Opcional: latitude/longitude)
-      // formData.append('latitude', latitude);
-      // formData.append('longitude', longitude);
-
-      // --- ETAPA 2: Enviar TUDO de uma vez para o NOSSO backend ---
+      
+      // Envia TUDO de uma vez para o backend ---
       await api.post('/uploads', formData, {
         headers: {
-          // Precisamos avisar o 'api.js' para não enviar JSON, mas sim 'multipart'
+          // Precisa avisar o 'api.js' para não enviar JSON, mas sim 'multipart'
           'Content-Type': 'multipart/form-data',
         }
       });
@@ -74,7 +70,7 @@ function UploadPage() {
     }
   };
 
-  // --- O JSX (HTML) do formulário não muda ---
+  // O JSX (HTML) do formulário não muda 
   return (
     <div className="form-container"> 
       <h1 className="form-title">Upload de Resíduo Coletado</h1>

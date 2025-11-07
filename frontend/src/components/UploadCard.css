@@ -1,10 +1,10 @@
-/* src/components/UploadCard.css */
+
 .card {
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   margin: 10px;
-  overflow: hidden; /* Garante que a imagem não vaze */
+  overflow: hidden; 
   width: 300px;
   background-color: #fff;
 }
@@ -12,7 +12,7 @@
 .card-image {
   width: 100%;
   height: 200px;
-  object-fit: cover; /* Faz a imagem cobrir o espaço sem distorcer */
+  object-fit: cover; 
 }
 
 .card-content {

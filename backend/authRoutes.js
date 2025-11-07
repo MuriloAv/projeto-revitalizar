@@ -7,23 +7,23 @@ const jwt = require('jsonwebtoken');
 const multer = require('multer'); // <-- NOVO
 const path = require('path'); // <-- NOVO
 
-// --- CONFIGURAÇÃO DO MULTER (O NOVO UPLOAD) ---
+//  CONFIGURAÇÃO DO MULTER  
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Salva na pasta que criamos: backend/public/uploads
+    // Salva na pasta backend/public/uploads
     cb(null, path.join(__dirname, 'public/uploads'));
   },
   filename: (req, file, cb) => {
-    // Cria um nome de arquivo único para evitar conflitos
+    // nome de arquivo único para evitar conflitos
     const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
     cb(null, uniqueName);
   }
 });
-// 'upload' será nosso "segurança" de arquivos
+// 'upload' será  "segurança" de arquivos
 const upload = multer({ storage: storage });
-// --- FIM DA CONFIGURAÇÃO DO MULTER ---
+// FIM DA CONFIGURAÇÃO DO MULTER
 
-// --- Rota de Registro (POST /register) ---
+// Rota de Registro (POST /register) 
 router.post('/register', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -43,7 +43,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// --- Rota de Login (POST /login) ---
+// rota de Login (POST /login) 
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// --- Rota Pública: GET /residue-types ---
+// Rota Pública: GET /residue-types
 router.get('/residue-types', async (req, res) => {
     try {
         const types = await db.query("SELECT * FROM residue_types ORDER BY name");
@@ -79,8 +79,7 @@ router.get('/residue-types', async (req, res) => {
     }
 });
 
-// --- Rota Pública: GET /uploads (Galeria) ---
-// (Esta rota ainda tem o Erro 500 que vimos antes)
+// Rota Pública GET /uploads
 router.get('/uploads', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -112,7 +111,7 @@ router.get('/uploads', async (req, res) => {
     }
 });
 
-// --- Middleware de Autenticação (Segurança) ---
+// Middleware de Autenticação
 function authMiddleware(req, res, next) {
     const authHeader = req.headers['authorization']; 
     if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ error: 'Acesso negado. Nenhum token fornecido.' });
@@ -125,13 +124,6 @@ function authMiddleware(req, res, next) {
         return res.status(401).json({ error: 'Token inválido ou expirado.' });
     }
 }
-
-// --- ROTA DELETADA ---
-// router.post('/uploads/generate-signature', ...);
-
-// ===================================================
-// --- Endpoint Protegido: POST /uploads (REFATORADO PARA MULTER) ---
-// ===================================================
 router.post('/uploads', 
   authMiddleware, // 1. Verifica o token
   upload.single('imageFile'), // 2. Multer intercepta e salva o arquivo com o nome 'imageFile'
@@ -139,23 +131,22 @@ router.post('/uploads',
     try {
       const userId = req.user.userId;
       
-      // 3. Pegamos os dados de texto do req.body
+      // Pega os dados de texto do req.body
       const { residueTypeId, city, river_name, notes, latitude, longitude } = req.body;
       
-      // 4. O Multer nos dá o arquivo em req.file
+      //  O Multer dá o arquivo em req.file
       if (!req.file) {
         return res.status(400).json({ error: 'Nenhum arquivo de imagem enviado.' });
       }
 
-      // 5. Criamos a URL pública para a imagem
-      // ex: http://localhost:5000/public/uploads/123456.jpg
+      //  Criamos a URL pública para a imagem      
       const imageUrl = `${req.protocol}://${req.get('host')}/public/uploads/${req.file.filename}`;
 
       if (!residueTypeId) {
         return res.status(400).json({ error: 'residueTypeId é obrigatório.' });
       }
       
-      // 6. Salvamos a URL no banco (igual antes)
+      //  Salva a URL no banco 
       const newUpload = await db.query(
         `INSERT INTO uploads (user_id, residue_type_id, image_url, location_lat, location_lng, city, river_name, notes)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -171,7 +162,7 @@ router.post('/uploads',
     }
 });
 
-// --- Endpoint Protegido: GET /auth/me ---
+// Endpoint Protegido: GET /auth/me 
 router.get('/auth/me', authMiddleware, async (req, res) => {
     try {
         const userId = req.user.userId;

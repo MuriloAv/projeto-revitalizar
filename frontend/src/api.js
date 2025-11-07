@@ -1,27 +1,25 @@
 import axios from 'axios';
 
-// 1. Crie uma "instância" do Axios
+// "instância" do Axios
 const api = axios.create({
-  // 2. Defina a URL base do seu BACKEND
-  // (Troque pela porta correta do seu backend!)
-  baseURL: 'http://localhost:5000' // ou 4000, etc.
+  // URL base do BACKEND  
+  baseURL: 'http://localhost:5000' // 
 });
 
-// 3. Crie um "Interceptor" - Mágico!
 // Isso vai "interceptar" TODA requisição antes dela sair
 api.interceptors.request.use(
   (config) => {
     // 4. Pega o token do localStorage
     const token = localStorage.getItem('token');
     
-    // 5. Se o token existir...
+    // Se o token existir...
     if (token) {
-      // 6. Adiciona o token no cabeçalho Authorization
+      // Adiciona o token no cabeçalho Authorization
       // O backend espera esse formato: "Bearer seu-token-gigante"
       config.headers.Authorization = `Bearer ${token}`;
     }
     
-    // 7. Libera a requisição para continuar
+    // Libera a requisição para continuar
     return config;
   },
   (error) => {
@@ -30,5 +28,5 @@ api.interceptors.request.use(
   }
 );
 
-// 8. Exporta a instância configurada
+// Exporta a instância configurada
 export default api;

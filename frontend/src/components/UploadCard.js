@@ -2,7 +2,7 @@ import React from 'react';
 import './UploadCard.css'; // Vamos criar este arquivo CSS
 
 function UploadCard({ upload }) {
-  // O backend (idealmente) nos envia os dados 'user' e 'residue_type' já aninhados
+  
   const { image_url, user, residue_type, collected_at } = upload;
 
   return (

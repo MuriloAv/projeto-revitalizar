@@ -5,10 +5,10 @@ import './NavBar.css';
 function Navbar() {
   const navigate = useNavigate();
 
-  // 1. Verificamos se o token existe no localStorage
+  // Verificamos se o token existe no localStorage
   const token = localStorage.getItem('token');
 
-  // 2. Função de Logout
+  // Função de Logout
   const handleLogout = () => {
     // Remove o token
     localStorage.removeItem('token');
@@ -38,7 +38,7 @@ function Navbar() {
               <Link to="/upload">Enviar Coleta</Link>
             </li>
             <li>
-              {/* Usamos um <button> aqui pois não é um link, é uma ação */}
+              {/* Usa <button> aqui pois não é um link é uma ação */}
               <button onClick={handleLogout} className="navbar-logout-btn">
                 Sair
               </button>
