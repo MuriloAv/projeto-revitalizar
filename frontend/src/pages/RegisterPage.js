@@ -1,66 +1,65 @@
 import React, { useState } from 'react';
-// 1. Importe o 'api' que configuramos (em vez do axios puro)
 import api from '../api'; 
-// 2. Importe o hook 'useNavigate' para podermos redirecionar o usuário
 import { useNavigate } from 'react-router-dom';
 
+// 1. Importa o CSS (Isso está certo)
+import './Form.css'; 
+
 function RegisterPage() {
-  // Cria estados para guardar o email e a senha
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  // 3. Inicializa o hook de navegação
   const navigate = useNavigate();
 
-  // Função que será chamada quando o formulário for enviado
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Impede o navegador de recarregar a página
-
+    event.preventDefault(); 
     try {
-      // 4. USAMOS O 'api' (em vez de 'axios')
-      //    Note que usamos apenas '/register'. A URL base (http://localhost:5000)
-      //    já está configurada dentro do arquivo 'api.js'.
-      const response = await api.post('/register', {
+      await api.post('/register', {
         email: email,
         password: password
       });
 
-      console.log('Usuário registrado!', response.data);
+      console.log('Usuário registrado!');
       alert('Usuário cadastrado com sucesso! Você será redirecionado para o login.');
       
-      // 5. Redireciona o usuário para a página de login
       navigate('/login');
 
     } catch (error) {
-      // A resposta de erro agora vem de 'error.response'
       console.error('Erro no registro:', error.response?.data || error.message);
       alert('Erro ao cadastrar usuário. Verifique o console.');
     }
   };
 
   return (
-    <div>
-      <h1>Página de Cadastro</h1>
+    <div className="form-container">
+      <h1 className="form-title">Página de Cadastro</h1>
+      
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
+        
+        <div className="form-group">
+          <label className="form-label">Email:</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="form-input" /* O comentário quebrado foi removido */
           />
         </div>
-        <div>
-          <label>Senha:</label>
+        
+        <div className="form-group">
+          <label className="form-label">Senha:</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="form-input" /* O comentário quebrado foi removido */
           />
         </div>
-        <button type="submit">Cadastrar</button>
+        
+        <button type="submit" className="form-button">
+          Cadastrar
+        </button>
       </form>
     </div>
   );

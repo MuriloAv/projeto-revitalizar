@@ -1,6 +1,10 @@
+// index.js (Refatorado para Multer)
+
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const authRoutes = require('./authRoutes'); // Importa as rotas
+const authRoutes = require('./authRoutes');
+const path = require('path'); // <-- Pacote do Node
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -8,9 +12,14 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Usa o arquivo authRoutes.js
+// --- NOVO: SERVIR ARQUIVOS ESTÁTICOS ---
+// Isso torna a pasta 'public' (e 'uploads' dentro dela) 
+// publicamente acessível pelo navegador.
+app.use('/public', express.static(path.join(__dirname, 'public')));
+// --- FIM DO NOVO ---
+
 app.use('/', authRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`[SUCESSO!] Servidor rodando na porta ${PORT}`);
 });

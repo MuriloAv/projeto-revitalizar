@@ -1,80 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api'; // Nossa instância Axios configurada (para nosso backend)
-import axios from 'axios'; // O Axios puro (para o upload no S3)
+import api from '../api'; // Nosso axios
+// import axios from 'axios'; // NÃO PRECISAMOS MAIS DELE
+import './Form.css'; // Reutilizando o CSS do formulário
 
 function UploadPage() {
-  // --- Passo 2: Estados do Formulário ---
-  const [residues, setResidues] = useState([]); // Lista de tipos de resíduo
-  const [selectedResidueId, setSelectedResidueId] = useState(''); // ID do resíduo escolhido
-  const [selectedFile, setSelectedFile] = useState(null); // O arquivo de imagem
-  const [loading, setLoading] = useState(false); // Para feedback ao usuário
-  
+  // Estados do formulário (sem mudanças)
+  const [residues, setResidues] = useState([]); 
+  const [selectedResidueId, setSelectedResidueId] = useState(''); 
+  const [selectedFile, setSelectedFile] = useState(null); 
+  const [loading, setLoading] = useState(false);
+  const [city, setCity] = useState('');
+  const [riverName, setRiverName] = useState('');
+  const [notes, setNotes] = useState('');
+
   const navigate = useNavigate();
 
-  // --- Passo 1: Buscar os Tipos de Resíduo ---
+  // Busca os tipos de resíduo (sem mudanças)
   useEffect(() => {
-    // Função async auto-executável
     (async () => {
       try {
-        //  Busca a lista de resíduos do nosso backend
         const response = await api.get('/residue-types');
         setResidues(response.data);
       } catch (error) {
         console.error("Erro ao buscar tipos de resíduo:", error);
-        alert("Falha ao carregar dados. Tente novamente.");
       }
     })();
-  }, []); // O [] vazio faz isso rodar apenas uma vez, quando a página carrega
+  }, []); 
 
-  // --- Passo 3: Implementar o handleSubmit ---
+  // --- O NOVO handleSubmit (FLUXO SIMPLES COM MULTER) ---
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Impede o recarregamento da página
+    event.preventDefault(); 
 
     if (!selectedFile || !selectedResidueId) {
       alert("Por favor, selecione um tipo de resíduo E um arquivo de imagem.");
       return;
     }
-
     setLoading(true);
 
     try {
-      // --- FLUXO CRÍTICO (Início) ---
+      // --- ETAPA 1: Criar o FormData ---
+      const formData = new FormData();
+      
+      // Adicionamos o arquivo de imagem
+      // O nome 'imageFile' TEM que ser o mesmo do upload.single('imageFile') no backend
+      formData.append('imageFile', selectedFile); 
+      
+      // Adicionamos TODOS os outros dados do formulário
+      formData.append('residueTypeId', selectedResidueId);
+      formData.append('city', city);
+      formData.append('river_name', riverName);
+      formData.append('notes', notes);
+      // (Opcional: latitude/longitude)
+      // formData.append('latitude', latitude);
+      // formData.append('longitude', longitude);
 
-      // 1. REQUISIÇÃO 1: Pedir a URL pré-assinada ao *nosso* backend
-      //  Enviamos o nome e o tipo do arquivo
-      const presignedUrlResponse = await api.post('/uploads/generate-presigned-url', {
-        fileName: selectedFile.name,
-        fileType: selectedFile.type
-      });
-
-      // 2. RESPOSTA 1: Pegamos as URLs que nosso backend retornou
-      //  A 'uploadUrl' é para onde vamos enviar, a 'imageUrl' é o que vamos salvar no banco
-      const { uploadUrl, imageUrl } = presignedUrlResponse.data;
-
-      // 3. UPLOAD DIRETO: Enviar o arquivo para o *Storage* (S3/Cloudinary)
-      // [cite: 80, 81] Usamos 'axios.put' (NÃO 'api.put') direto para a URL recebida.
-      // Não enviamos token de Auth, mas enviamos o Content-Type correto.
-      await axios.put(uploadUrl, selectedFile, {
+      // --- ETAPA 2: Enviar TUDO de uma vez para o NOSSO backend ---
+      await api.post('/uploads', formData, {
         headers: {
-          'Content-Type': selectedFile.type
+          // Precisamos avisar o 'api.js' para não enviar JSON, mas sim 'multipart'
+          'Content-Type': 'multipart/form-data',
         }
       });
 
-      // 4. REQUISIÇÃO 2: Salvar os dados no *nosso* banco de dados
-      //  Agora que a imagem está no S3, avisamos nosso backend
-      // O 'user_id' é pego automaticamente pelo backend via token [cite: 88]
-      await api.post('/uploads', {
-        imageUrl: imageUrl,                 // [cite: 85]
-        residueTypeId: selectedResidueId    // [cite: 86]
-        // Opcional: Adicionar latitude/longitude aqui
-      });
-
-      // --- FLUXO CRÍTICO (Fim) ---
-
       setLoading(false);
       alert("Upload realizado com sucesso!");
-      navigate('/'); // Redireciona para a galeria (HomePage)
+      navigate('/'); // Vai para a galeria (HomePage)
 
     } catch (error) {
       setLoading(false);
@@ -83,18 +74,21 @@ function UploadPage() {
     }
   };
 
+  // --- O JSX (HTML) do formulário não muda ---
   return (
-    <div>
-      <h1>Upload de Resíduo Coletado</h1>
+    <div className="form-container"> 
+      <h1 className="form-title">Upload de Resíduo Coletado</h1>
+      
       <form onSubmit={handleSubmit}>
         
-        {/* Dropdown para Tipos de Resíduo */}
-        <div>
-          <label>Tipo de Resíduo:</label>
+        {/* Tipo de Resíduo (Dropdown) */}
+        <div className="form-group">
+          <label className="form-label">Tipo de Resíduo:</label>
           <select 
             value={selectedResidueId} 
             onChange={(e) => setSelectedResidueId(e.target.value)}
             required
+            className="form-input"
           >
             <option value="">Selecione um tipo</option>
             {residues.map((residue) => (
@@ -105,18 +99,56 @@ function UploadPage() {
           </select>
         </div>
 
-        {/* Input para o Arquivo de Imagem */}
-        <div>
-          <label>Foto do Resíduo:</label>
+        {/* Foto do Resíduo (Input File) */}
+        <div className="form-group">
+          <label className="form-label">Foto do Resíduo:</label>
           <input 
             type="file" 
-            accept="image/*" // Aceita apenas imagens
+            accept="image/*" 
             onChange={(e) => setSelectedFile(e.target.files[0])}
             required 
+            className="form-input"
+          />
+        </div>
+        
+        {/* Cidade */}
+        <div className="form-group">
+          <label className="form-label">Cidade:</label>
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className="form-input"
+            placeholder="Ex: São Paulo"
+          />
+        </div>
+        
+        {/* Nome do Rio */}
+        <div className="form-group">
+          <label className="form-label">Nome do Rio:</label>
+          <input
+            type="text"
+            value={riverName}
+            onChange={(e) => setRiverName(e.target.value)}
+            className="form-input"
+            placeholder="Ex: Rio Tietê"
           />
         </div>
 
-        <button type="submit" disabled={loading}>
+        {/* Observações (A "caixa") */}
+        <div className="form-group">
+          <label className="form-label">Observações:</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="form-input"
+            placeholder="Descreva o local ou detalhes da coleta..."
+            rows="4"
+          ></textarea>
+        </div>
+        
+        {/* Botão de Envio */}
+        <button type="submit" className="form-button" disabled={loading}>
           {loading ? 'Enviando...' : 'Enviar Coleta'}
         </button>
       </form>
